@@ -1,4 +1,4 @@
-#NextBus or NextDösä 
+# NextBus or NextDösä 
 
 This project is the end-project for the "Ohjelmistokehityksen teknogioita" course.
 
