@@ -12,16 +12,18 @@ import com.santtuhyvarinen.nextbus.models.BusStopModel
 //RecyclerView adapter that manages bus stop item views
 class BusStopAdapter(val context : Context, val busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
     class ViewHolder(var root : View) : RecyclerView.ViewHolder(root) {
-        val busNumberTextView : TextView
-        val arrivalTimeTextView : TextView
+        val routeTextView : TextView
+        val leavesTextView : TextView
+        val destinationTextView : TextView
         val busStopNameTextView : TextView
         val busIcon : ImageView
 
         init {
             busIcon = root.findViewById(R.id.transportIcon)
-            busStopNameTextView = root.findViewById(R.id.busStopNameText)
-            busNumberTextView = root.findViewById(R.id.busNumberText)
-            arrivalTimeTextView = root.findViewById(R.id.arrivalTimeText)
+            busStopNameTextView = root.findViewById(R.id.stopText)
+            routeTextView = root.findViewById(R.id.routeText)
+            leavesTextView = root.findViewById(R.id.leavesText)
+            destinationTextView = root.findViewById(R.id.destinationText)
         }
     }
 
@@ -37,7 +39,8 @@ class BusStopAdapter(val context : Context, val busStopModels : List<BusStopMode
     //Set the bus stop info
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val busStopModel = busStopModels[position]
-        holder.busStopNameTextView.text = busStopModel.name
-        holder.busNumberTextView.text = busStopModel.busNumber
+        holder.busStopNameTextView.text = busStopModel.stopName
+        holder.routeTextView.text = busStopModel.route
+        holder.destinationTextView.text = busStopModel.destinationName
     }
 }

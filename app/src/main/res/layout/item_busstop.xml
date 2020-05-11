@@ -11,45 +11,71 @@
         android:layout_height="@dimen/bus_stop_icon_size"
         android:src="@drawable/ic_bus"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/busNumberText"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintBottom_toTopOf="@id/routeText"
+        app:layout_constraintLeft_toLeftOf="@id/routeText"
+        app:layout_constraintRight_toRightOf="@id/routeText"/>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/busNumberText"
+        android:id="@+id/routeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="-"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="@id/transportIcon"
-        app:layout_constraintTop_toBottomOf="@id/transportIcon"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/busStopNameText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="-"
-        android:textStyle="bold"
-        app:layout_constraintRight_toRightOf="@id/verticalGuideline"
-        app:layout_constraintLeft_toRightOf="@id/busNumberText"
+        app:layout_constraintRight_toLeftOf="@id/guide1"
         app:layout_constraintTop_toBottomOf="@id/transportIcon"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/verticalGuideline"
+        android:id="@+id/guide1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintGuide_percent="0.5"
-        android:orientation="vertical"/>
-
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25"/>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/arrivalTimeText"
+        android:id="@+id/stopText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/guide1"
+        app:layout_constraintRight_toLeftOf="@id/guide2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/destinationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/guide2"
+        app:layout_constraintRight_toLeftOf="@id/guide3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/leavesText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1 min"
         android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/guide3"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

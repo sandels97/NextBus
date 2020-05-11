@@ -4,11 +4,85 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".fragments.HomeFragment">
+
+    <View
+        android:id="@+id/homeTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_bar_height"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/routeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/route"
+        style="@style/HomeBarTextStyle"
+        app:layout_constraintTop_toTopOf="@id/homeTopBar"
+        app:layout_constraintBottom_toBottomOf="@id/homeTopBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/guide1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/stopTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stop"
+        style="@style/HomeBarTextStyle"
+        app:layout_constraintTop_toTopOf="@id/homeTopBar"
+        app:layout_constraintBottom_toBottomOf="@id/homeTopBar"
+        app:layout_constraintLeft_toRightOf="@id/guide1"
+        app:layout_constraintRight_toLeftOf="@id/guide2"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/destinationTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/destination"
+        style="@style/HomeBarTextStyle"
+        app:layout_constraintTop_toTopOf="@id/homeTopBar"
+        app:layout_constraintBottom_toBottomOf="@id/homeTopBar"
+        app:layout_constraintLeft_toRightOf="@id/guide2"
+        app:layout_constraintRight_toLeftOf="@id/guide3"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/leavesTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/leaves"
+        style="@style/HomeBarTextStyle"
+        app:layout_constraintTop_toTopOf="@id/homeTopBar"
+        app:layout_constraintBottom_toBottomOf="@id/homeTopBar"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/guide3"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/bottom_nav_height"/>
+        android:layout_height="0dp"
+        android:paddingBottom="@dimen/bottom_nav_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/homeTopBar"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

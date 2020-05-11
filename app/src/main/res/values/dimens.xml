@@ -6,4 +6,7 @@
     <dimen name="bus_stop_icon_size">40dp</dimen>
     <dimen name="item_margin">5dp</dimen>
     <dimen name="bottom_nav_height">56dp</dimen>
+    <dimen name="home_bar_height">56dp</dimen>
+
+    <dimen name="small_elevation">5dp</dimen>
 </resources>

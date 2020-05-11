@@ -1,4 +1,4 @@
-package com.santtuhyvarinen.nextbus.ui.home
+package com.santtuhyvarinen.nextbus.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,9 +21,9 @@ class HomeFragment : Fragment() {
         //Test data
         val busStopModels = ArrayList<BusStopModel>()
         for(x in 0 until 4) {
-            busStopModels.add(BusStopModel(12, "543", "Helsinki", 1.5f, 1.45f))
-            busStopModels.add(BusStopModel(11, "434", "Vantaa", 1.5f, 1.45f))
-            busStopModels.add(BusStopModel(10, "431", "Kivistö", 1.5f, 1.45f))
+            busStopModels.add(BusStopModel(12, "543", "Fakekatu","Helsinki", 1.5f, 1.45f))
+            busStopModels.add(BusStopModel(11, "434", "Kuninkaantie","Vantaa", 1.5f, 1.45f))
+            busStopModels.add(BusStopModel(10, "431", "Vesikuja","Kivistö", 1.5f, 1.45f))
         }
 
         //Initialize the RecyclerView
