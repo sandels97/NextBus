@@ -16,7 +16,9 @@ class MainActivity : AppCompatActivity() {
 
     //All the permissions that app requires
     val PERMISSIONS = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_NETWORK_STATE
     )
 
     //Request code for permissions
@@ -39,18 +41,20 @@ class MainActivity : AppCompatActivity() {
 
         //Permission - Ask user for permissions if they are not granted
         if(!PermissionUtil.hasPermissions(this, *PERMISSIONS)) {
-            Log.d(PermissionUtil.LOG_PERMISSION, "Permissions not granted - Ask for permissions")
+            Log.d(PermissionUtil.PERMISSION_TAG, "Permissions not granted - Ask for permissions")
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         } else {
-            Log.d(PermissionUtil.LOG_PERMISSION, "All permissions granted")
+            Log.d(PermissionUtil.PERMISSION_TAG, "All permissions granted")
             permissionsGranted = true
         }
+
+        val locationHandler = LocationHandler(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         permissionsGranted = PermissionUtil.hasPermissions(this, *PERMISSIONS)
-        Log.d(PermissionUtil.LOG_PERMISSION, "Permissions granted? " + permissionsGranted)
+        Log.d(PermissionUtil.PERMISSION_TAG, "Permissions granted? " + permissionsGranted)
     }
 }

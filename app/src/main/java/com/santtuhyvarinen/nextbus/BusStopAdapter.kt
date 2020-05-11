@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 
 //RecyclerView adapter that manages bus stop item views
-class BusStopAdapter(val context : Context, val busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
+class BusStopAdapter(private val context : Context, private val busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
     class ViewHolder(var root : View) : RecyclerView.ViewHolder(root) {
         val routeTextView : TextView
         val leavesTextView : TextView

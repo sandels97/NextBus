@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 class PermissionUtil {
     companion object {
         //For logging
-        const val LOG_PERMISSION = "permission_log"
+        const val PERMISSION_TAG = "permission_tag"
 
         fun hasPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
             ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
