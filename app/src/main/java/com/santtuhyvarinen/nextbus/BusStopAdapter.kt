@@ -42,5 +42,6 @@ class BusStopAdapter(val context : Context, val busStopModels : List<BusStopMode
         holder.busStopNameTextView.text = busStopModel.stopName
         holder.routeTextView.text = busStopModel.route
         holder.destinationTextView.text = busStopModel.destinationName
+        holder.busIcon.setImageDrawable(busStopModel.getDrawable(context))
     }
 }
