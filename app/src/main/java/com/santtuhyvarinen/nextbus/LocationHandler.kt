@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -14,7 +15,12 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 
-class LocationHandler(private val context: Activity) {
+class LocationHandler(private val context: Context, private val locationHandlerListener: LocationHandlerListener) {
+
+    //x = latitude, y = longitude
+    var location : PointF? = null
+
+    lateinit var fusedLocationProviderClient : FusedLocationProviderClient
 
     init {
         initLocationManager()
@@ -25,12 +31,19 @@ class LocationHandler(private val context: Activity) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(LOCATION_TAG, "No permission to get location")
             return
         }
 
         val locationRequest = LocationRequest()
-        locationRequest.interval = 5000
-        locationRequest.fastestInterval = 5000
+
+        //Update every 10 seconds
+        locationRequest.interval = 10000
+        locationRequest.fastestInterval = 10000
+
+        //But only if travelled over 50m
+        locationRequest.smallestDisplacement = 50f
+
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
         val locationCallback = object : LocationCallback() {
@@ -38,17 +51,34 @@ class LocationHandler(private val context: Activity) {
                 super.onLocationResult(result)
 
                 if(result != null) {
+                    Log.d(LOCATION_TAG, "Updated location")
+                    location = PointF(result.lastLocation.latitude.toFloat(), result.lastLocation.longitude.toFloat())
+                    locationHandlerListener.locationUpdated()
                 }
             }
         }
 
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+
+        val result = fusedLocationProviderClient.lastLocation
+        result.addOnSuccessListener {
+            Log.d(LOCATION_TAG, "Updated location with last known location")
+            location = PointF(it.latitude.toFloat(), it.longitude.toFloat())
+            locationHandlerListener.locationUpdated()
+        }.addOnFailureListener {
+            Log.d(LOCATION_TAG, "Could not find last known location")
+            locationHandlerListener.locationOff()
+        }
     }
 
     companion object {
         const val LOCATION_TAG = "location_tag"
     }
 
+    interface LocationHandlerListener {
+        fun locationUpdated()
+        fun locationOff()
+    }
 }

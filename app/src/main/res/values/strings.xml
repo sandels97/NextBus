@@ -9,4 +9,6 @@
     <string name="stop">Stop</string>
     <string name="destination">Destination</string>
     <string name="route">Route</string>
+
+    <string name="location_not_found">Location not found</string>
 </resources>

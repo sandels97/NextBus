@@ -1,6 +1,7 @@
 package com.santtuhyvarinen.nextbus
 
 import android.Manifest
+import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
             permissionsGranted = true
         }
 
-        val locationHandler = LocationHandler(this)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

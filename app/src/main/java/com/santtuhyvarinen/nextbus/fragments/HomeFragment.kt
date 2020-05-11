@@ -45,6 +45,28 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = busStopAdapter
         recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
+        val locationOffIcon = root.findViewById<View>(R.id.locationOffIcon)
+        val locationOffText = root.findViewById<View>(R.id.locationOffText)
+
+        locationHandler = LocationHandler(context!!, object : LocationHandler.LocationHandlerListener {
+
+            //Show the recyclerView
+            override fun locationUpdated() {
+                recyclerView.visibility = View.VISIBLE
+                locationOffIcon.visibility = View.GONE
+                locationOffText.visibility = View.GONE
+            }
+
+            //Hide recyclerview and instead show Location Off
+            override fun locationOff() {
+                recyclerView.visibility = View.INVISIBLE
+                locationOffIcon.visibility = View.VISIBLE
+                locationOffText.visibility = View.VISIBLE
+            }
+        })
+
         return root
     }
+
+
 }
