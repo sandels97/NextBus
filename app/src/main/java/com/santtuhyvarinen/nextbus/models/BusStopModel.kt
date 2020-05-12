@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import com.santtuhyvarinen.nextbus.R
 
 //Model that holds information about a bus stop
-class BusStopModel (var id : Long, var route : String, var stopName : String, var destinationName : String, var routeType : Int, var longitude : Float, var latitude : Float) {
+class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int) {
     companion object {
         //Based on https://developers.google.com/transit/gtfs/reference
         const val ROUTE_TYPE_TRAM = 0
@@ -23,6 +23,10 @@ class BusStopModel (var id : Long, var route : String, var stopName : String, va
             ROUTE_TYPE_BUS -> return ContextCompat.getDrawable(context, R.drawable.ic_bus)!!
             else -> return ContextCompat.getDrawable(context, R.drawable.ic_transport_other)!!
         }
+    }
+
+    override fun toString(): String {
+        return "$route, $stopName, $routeType, $distance"
     }
 }
 

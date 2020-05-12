@@ -1,6 +1,7 @@
 package com.santtuhyvarinen.nextbus
 
 import android.util.Log
+import com.santtuhyvarinen.nextbus.models.BusStopModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -8,28 +9,75 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
-class ApiHandler  {
+class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
+
+    interface ApiHandlerListener {
+        fun dataReady(busModels : List<BusStopModel>)
+    }
     companion object {
         const val API_URL = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql"
         const val API_TAG = "api_tag"
+
+        fun secondsToTime(seconds : Int){
+            val minutes = Math.floor((seconds % 3600)/60.0)
+            val hours = Math.floor(seconds/3600.0)
+
+            Log.d(API_TAG, "$hours : $minutes")
+        }
+
+        //Create BusStopModels from the fetched JSONObject
+        fun parseJSONResponse(jsonObject: JSONObject) : List<BusStopModel> {
+            val list : ArrayList<BusStopModel> = ArrayList()
+            try {
+
+                val edges = jsonObject.getJSONObject("data").getJSONObject("stopsByRadius").getJSONArray("edges")
+
+                for(x in 0 until edges.length()) {
+                    val node = edges.getJSONObject(x).getJSONObject("node")
+                    val stop = node.getJSONObject("stop")
+                    val busStopName = stop.getString("name")
+                    val vehicleType = stop.getInt("vehicleType")
+
+                    val distance = node.getInt("distance")
+                    val busStopModel = BusStopModel("111",busStopName, "", vehicleType,distance)
+                    list.add(busStopModel)
+                }
+
+            } catch (e : JSONException) {
+                e.printStackTrace()
+            } catch (e : Exception) {
+                e.printStackTrace()
+            }
+
+            return list
+        }
     }
 
-    fun fetch(){
+    fun fetch(latitude : Float, longitude : Float, radius : Int){
         GlobalScope.launch(Dispatchers.Main) {
-            val result = fetchStopTimeData()
+            val date = Date()
+            val result = fetchStopTimeData(date, latitude, longitude, radius)
             if (result != null) {
                 Log.d(API_TAG, result.toString())
+
+                val list = parseJSONResponse(result)
+                apiHandlerListener.dataReady(list)
             } else {
                 Log.d(API_TAG, "Result was null")
             }
         }
     }
 
-    private suspend fun fetchStopTimeData() : JSONObject? = withContext(Dispatchers.IO) {
+    private suspend fun fetchStopTimeData(date : Date, latitude : Float, longitude : Float, radius : Int) : JSONObject? = withContext(Dispatchers.IO) {
         val inputStream : InputStream
 
         var result : JSONObject? = null
@@ -45,23 +93,14 @@ class ApiHandler  {
             conn.doOutput = true
             conn.doInput = true
 
-
             conn.connect()
 
-            val data = "{\n" +
-                    "  stopsByRadius(lat: 60.19924, lon: 24.94112, radius: 1000, first: 10) {\n" +
-                    "    edges {\n" +
-                    "      node {\n" +
-                    "        stop {\n" +
-                    "          name\n" +
-                    "          lat\n" +
-                    "          lon\n" +
-                    "        }\n" +
-                    "        distance\n" +
-                    "      }\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}"
+            val dateFormat: DateFormat = SimpleDateFormat("yyyyMMdd")
+            val dateValue = dateFormat.format(date)
+
+            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 5) {edges{node{stop{name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName}}}vehicleType}distance}}}}"
+
+            Log.d(API_TAG, data)
 
             val wr = OutputStreamWriter(conn.outputStream)
             wr.write(data)
