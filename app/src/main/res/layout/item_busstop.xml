@@ -17,10 +17,10 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/routeText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="-"
-        android:textStyle="bold"
+        style="@style/ItemTextStyle"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/guide1"
         app:layout_constraintTop_toBottomOf="@id/transportIcon"
@@ -35,13 +35,26 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/stopText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="-"
-        android:textStyle="bold"
+        style="@style/ItemTextStyle"
         app:layout_constraintLeft_toRightOf="@id/guide1"
         app:layout_constraintRight_toLeftOf="@id/guide2"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/stopDistanceText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="-"
+        style="@style/ItemTextStyle"
+        android:textSize="10sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintLeft_toRightOf="@id/guide1"
+        app:layout_constraintRight_toLeftOf="@id/guide2"
+        app:layout_constraintTop_toBottomOf="@id/stopText"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.constraintlayout.widget.Guideline
@@ -53,10 +66,10 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/destinationText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="-"
-        android:textStyle="bold"
+        style="@style/ItemTextStyle"
         app:layout_constraintLeft_toRightOf="@id/guide2"
         app:layout_constraintRight_toLeftOf="@id/guide3"
         app:layout_constraintTop_toTopOf="parent"
@@ -71,10 +84,10 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/leavesText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="1 min"
-        android:textStyle="bold"
+        style="@style/ItemTextStyle"
         app:layout_constraintLeft_toRightOf="@id/guide3"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"

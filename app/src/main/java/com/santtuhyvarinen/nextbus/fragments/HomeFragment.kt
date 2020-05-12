@@ -30,13 +30,14 @@ class HomeFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 
-        //Test data
         val busStopModels = ArrayList<BusStopModel>()
-        for(x in 0 until 4) {
+
+        //Test data
+        /*for(x in 0 until 4) {
             busStopModels.add(BusStopModel("543", "Fakekatu","Helsinki", BusStopModel.ROUTE_TYPE_BUS,1))
             busStopModels.add(BusStopModel( "434", "Kuninkaantie","Vantaa", BusStopModel.ROUTE_TYPE_BUS,1))
             busStopModels.add(BusStopModel( "431", "Vesikuja","Kivistö", BusStopModel.ROUTE_TYPE_RAIL,1))
-        }
+        }*/
 
         //Initialize the RecyclerView
         val linearLayoutManager = LinearLayoutManager(context)
@@ -51,6 +52,8 @@ class HomeFragment : Fragment() {
 
         val apiHandler = ApiHandler(object : ApiHandler.ApiHandlerListener {
             override fun dataReady(busModels: List<BusStopModel>) {
+                busStopAdapter.busStopModels = busModels
+                busStopAdapter.notifyDataSetChanged()
                 for(model in busModels) {
                     Log.d(ApiHandler.API_TAG, model.toString())
                 }
@@ -65,8 +68,7 @@ class HomeFragment : Fragment() {
                 locationOffIcon.visibility = View.GONE
                 locationOffText.visibility = View.GONE
                 val location = locationHandler.location
-                if(location != null) apiHandler.fetch(location.x, location.y, 1000)
-                ApiHandler.secondsToTime(24232)
+                if(location != null) apiHandler.fetch(location.x, location.y, 10000)
             }
 
             //Hide recyclerview and instead show Location Off

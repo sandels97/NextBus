@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 
 //RecyclerView adapter that manages bus stop item views
-class BusStopAdapter(private val context : Context, private val busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
+class BusStopAdapter(private val context : Context, var busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
     class ViewHolder(var root : View) : RecyclerView.ViewHolder(root) {
         val routeTextView : TextView
         val leavesTextView : TextView
         val destinationTextView : TextView
         val busStopNameTextView : TextView
         val busIcon : ImageView
+        val distanceText : TextView
 
         init {
             busIcon = root.findViewById(R.id.transportIcon)
@@ -24,6 +25,7 @@ class BusStopAdapter(private val context : Context, private val busStopModels : 
             routeTextView = root.findViewById(R.id.routeText)
             leavesTextView = root.findViewById(R.id.leavesText)
             destinationTextView = root.findViewById(R.id.destinationText)
+            distanceText = root.findViewById(R.id.stopDistanceText)
         }
     }
 
@@ -43,5 +45,8 @@ class BusStopAdapter(private val context : Context, private val busStopModels : 
         holder.routeTextView.text = busStopModel.route
         holder.destinationTextView.text = busStopModel.destinationName
         holder.busIcon.setImageDrawable(busStopModel.getDrawable(context))
+
+        val distance = busStopModel.distance
+        holder.distanceText.text = "$distance m"
     }
 }

@@ -34,22 +34,52 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
             Log.d(API_TAG, "$hours : $minutes")
         }
 
-        //Create BusStopModels from the fetched JSONObject
+        //Create BusStopModels from the fetched JSONObject - JSON object has to match GraphQL query in fetchStopTimeData
         fun parseJSONResponse(jsonObject: JSONObject) : List<BusStopModel> {
             val list : ArrayList<BusStopModel> = ArrayList()
             try {
 
                 val edges = jsonObject.getJSONObject("data").getJSONObject("stopsByRadius").getJSONArray("edges")
 
+                val routes : ArrayList<String> = ArrayList()
+
                 for(x in 0 until edges.length()) {
                     val node = edges.getJSONObject(x).getJSONObject("node")
                     val stop = node.getJSONObject("stop")
                     val busStopName = stop.getString("name")
+                    val id = stop.getString("id")
                     val vehicleType = stop.getInt("vehicleType")
 
                     val distance = node.getInt("distance")
-                    val busStopModel = BusStopModel("111",busStopName, "", vehicleType,distance)
-                    list.add(busStopModel)
+
+                    val stopTimesForDate = stop.getJSONArray("stoptimesForServiceDate")
+                    for(y in 0 until stopTimesForDate.length()) {
+                        val stopTimesObject = stopTimesForDate.getJSONObject(y)
+                        val stopTimes = stopTimesObject.getJSONArray("stoptimes")
+
+                        for(z in 0 until stopTimes.length()) {
+                            val stopTimeObject = stopTimes.getJSONObject(z)
+
+                            val trip = stopTimeObject.getJSONObject("trip")
+
+                            val routeName = trip.getString("routeShortName")
+                            val tripHeadSign = trip.getString("tripHeadsign")
+                            if (!routes.contains(id + routeName)) {
+                                routes.add(id + routeName)
+
+                                val busStopModel =
+                                    BusStopModel(
+                                        routeName,
+                                        busStopName,
+                                        tripHeadSign,
+                                        vehicleType,
+                                        distance
+                                    )
+
+                                list.add(busStopModel)
+                            }
+                        }
+                    }
                 }
 
             } catch (e : JSONException) {
@@ -98,7 +128,8 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
             val dateFormat: DateFormat = SimpleDateFormat("yyyyMMdd")
             val dateValue = dateFormat.format(date)
 
-            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 5) {edges{node{stop{name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName}}}vehicleType}distance}}}}"
+            //GraphQL query
+            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName tripHeadsign}}}vehicleType}distance}}}}"
 
             Log.d(API_TAG, data)
 
