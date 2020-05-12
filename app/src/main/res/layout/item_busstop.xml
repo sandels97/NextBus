@@ -86,7 +86,7 @@
         android:id="@+id/leavesText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="1 min"
+        android:text="-"
         style="@style/ItemTextStyle"
         app:layout_constraintLeft_toRightOf="@id/guide3"
         app:layout_constraintRight_toRightOf="parent"

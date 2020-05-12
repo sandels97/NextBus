@@ -27,7 +27,7 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
         const val API_URL = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql"
         const val API_TAG = "api_tag"
 
-        fun secondsToTime(seconds : Int){
+        fun secondsToTime(seconds : Int) {
             val minutes = Math.floor((seconds % 3600)/60.0)
             val hours = Math.floor(seconds/3600.0)
 
@@ -41,8 +41,6 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
 
                 val edges = jsonObject.getJSONObject("data").getJSONObject("stopsByRadius").getJSONArray("edges")
 
-                val routes : ArrayList<String> = ArrayList()
-
                 for(x in 0 until edges.length()) {
                     val node = edges.getJSONObject(x).getJSONObject("node")
                     val stop = node.getJSONObject("stop")
@@ -52,33 +50,30 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
 
                     val distance = node.getInt("distance")
 
-                    val stopTimesForDate = stop.getJSONArray("stoptimesForServiceDate")
-                    for(y in 0 until stopTimesForDate.length()) {
-                        val stopTimesObject = stopTimesForDate.getJSONObject(y)
-                        val stopTimes = stopTimesObject.getJSONArray("stoptimes")
+                    val patterns = stop.getJSONArray("stoptimesForPatterns")
+                    for(y in 0 until patterns.length()) {
+                        val pattern = patterns.getJSONObject(y).getJSONObject("pattern")
+                        val routeName = pattern.getJSONObject("route").getString("shortName")
 
-                        for(z in 0 until stopTimes.length()) {
-                            val stopTimeObject = stopTimes.getJSONObject(z)
+                        val tripHeadSign = pattern.getString("headsign")
 
-                            val trip = stopTimeObject.getJSONObject("trip")
-
-                            val routeName = trip.getString("routeShortName")
-                            val tripHeadSign = trip.getString("tripHeadsign")
-                            if (!routes.contains(id + routeName)) {
-                                routes.add(id + routeName)
-
-                                val busStopModel =
-                                    BusStopModel(
-                                        routeName,
-                                        busStopName,
-                                        tripHeadSign,
-                                        vehicleType,
-                                        distance
-                                    )
-
-                                list.add(busStopModel)
-                            }
+                        val stopTimesArray = patterns.getJSONObject(y).getJSONArray("stoptimes")
+                        val stopTimes = IntArray(stopTimesArray.length())
+                        for(z in 0 until stopTimesArray.length()) {
+                            stopTimes[z] = stopTimesArray.getJSONObject(z).getInt("scheduledDeparture")
                         }
+
+                        val busStopModel =
+                            BusStopModel(
+                                routeName,
+                                busStopName,
+                                tripHeadSign,
+                                vehicleType,
+                                distance,
+                                stopTimes
+                            )
+
+                        list.add(busStopModel)
                     }
                 }
 
@@ -129,7 +124,8 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
             val dateValue = dateFormat.format(date)
 
             //GraphQL query
-            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName tripHeadsign}}}vehicleType}distance}}}}"
+            //val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName tripHeadsign}}}vehicleType}distance}}}}"
+            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name vehicleType stoptimesForPatterns{pattern{ headsign route{shortName}}stoptimes{scheduledDeparture}}}distance}}}}"
 
             Log.d(API_TAG, data)
 

@@ -6,7 +6,8 @@ import androidx.core.content.ContextCompat
 import com.santtuhyvarinen.nextbus.R
 
 //Model that holds information about a bus stop
-class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int) {
+class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int, val stopTimes : IntArray) {
+
     companion object {
         //Based on https://developers.google.com/transit/gtfs/reference
         const val ROUTE_TYPE_TRAM = 0

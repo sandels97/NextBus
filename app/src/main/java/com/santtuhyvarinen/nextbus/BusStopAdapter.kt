@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.santtuhyvarinen.nextbus.models.BusStopModel
+import org.joda.time.DateTime
+import java.util.*
 
 //RecyclerView adapter that manages bus stop item views
 class BusStopAdapter(private val context : Context, var busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
@@ -48,5 +50,26 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
 
         val distance = busStopModel.distance
         holder.distanceText.text = "$distance m"
+
+        if(busStopModel.stopTimes.size > 0) {
+            holder.leavesTextView.text = getLeaveTime(busStopModel.stopTimes[0])
+        }
+
+    }
+
+    fun getLeaveTime(seconds : Int) : String {
+        val now = DateTime.now()
+
+        val leaveMinutes = Math.floor((seconds % 3600)/60.0).toInt()
+        val leaveHours = Math.floor(seconds/3600.0).toInt()
+
+        //If departure is within 10 min of the current moment
+        if(seconds - now.secondOfDay < 10 * 60) {
+            val value = Math.floor((seconds - now.secondOfDay) / 60.0).toInt()
+            return "$value m"
+        }
+        val hourString = String.format("%02d", leaveHours)
+        val minuteString = String.format("%02d", leaveMinutes)
+        return "$hourString:$minuteString"
     }
 }
