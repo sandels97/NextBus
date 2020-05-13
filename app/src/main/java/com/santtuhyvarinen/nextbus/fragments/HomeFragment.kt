@@ -166,29 +166,23 @@ class HomeFragment : Fragment() {
             for (busModel in busModels) {
                 busModel.isFavorite = false
                 for (favorite in favorites) {
-                    if (busModel.route.equals(favorite.route)) {
+                    if (busModel.route == favorite.route) {
                         busModel.isFavorite = true
                         break
                     }
                 }
             }
 
-            //Bring favorite routes to front, then sort by distance, closest stop to top
+            //Sort BusStopModels first based on if they are favorite and then based on the distance
             Collections.sort(busModels, object : Comparator<BusStopModel> {
                 override fun compare(stop1: BusStopModel, stop2: BusStopModel): Int {
-                    if (stop1.isFavorite && !stop2.isFavorite) {
-                        return -1
-                    } else if (!stop1.isFavorite && stop2.isFavorite) {
-                        return 1
-                    }
 
-                    val value = Math.abs(stop2.distance - stop1.distance)
-
-                    //There is possibility for IllegalArgumentException: (Comparison method violates its general contract!) if we return 0
-                    if(value == 0) return -1
-                    return value
+                    val value = stop2.isFavorite.compareTo(stop1.isFavorite)
+                    if(value != 0) return value
+                    return stop1.distance.compareTo(stop2.distance)
                 }
-            });
+            })
+
         }
     }
 
