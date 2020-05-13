@@ -4,9 +4,10 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import com.santtuhyvarinen.nextbus.R
+import org.joda.time.DateTime
 
 //Model that holds information about a bus stop
-class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int, val stopTimes : IntArray) {
+class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int, val stopTimes : List<DateTime>) {
 
     companion object {
         //Based on https://developers.google.com/transit/gtfs/reference

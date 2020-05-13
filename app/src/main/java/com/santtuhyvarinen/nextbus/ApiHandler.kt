@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.joda.time.DateTime
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.*
@@ -45,7 +46,6 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
                     val node = edges.getJSONObject(x).getJSONObject("node")
                     val stop = node.getJSONObject("stop")
                     val busStopName = stop.getString("name")
-                    val id = stop.getString("id")
                     val vehicleType = stop.getInt("vehicleType")
 
                     val distance = node.getInt("distance")
@@ -58,9 +58,17 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
                         val tripHeadSign = pattern.getString("headsign")
 
                         val stopTimesArray = patterns.getJSONObject(y).getJSONArray("stoptimes")
-                        val stopTimes = IntArray(stopTimesArray.length())
+                        val stopTimes = ArrayList<DateTime>()
                         for(z in 0 until stopTimesArray.length()) {
-                            stopTimes[z] = stopTimesArray.getJSONObject(z).getInt("scheduledDeparture")
+
+                            val stoptime = stopTimesArray.getJSONObject(z)
+                            val seconds = stoptime.getInt("scheduledDeparture") //Stop time is SecondsFromMidnight
+                            val date = stoptime.getLong("serviceDay") //Date is in UNIX format
+
+                            var dateTime = DateTime(date * 1000)
+                            dateTime = dateTime.plusSeconds(seconds)
+
+                            stopTimes.add(dateTime)
                         }
 
                         val busStopModel =
@@ -120,12 +128,9 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
 
             conn.connect()
 
-            val dateFormat: DateFormat = SimpleDateFormat("yyyyMMdd")
-            val dateValue = dateFormat.format(date)
-
             //GraphQL query
             //val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName tripHeadsign}}}vehicleType}distance}}}}"
-            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name vehicleType stoptimesForPatterns{pattern{ headsign route{shortName}}stoptimes{scheduledDeparture}}}distance}}}}"
+            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name vehicleType stoptimesForPatterns{pattern{ headsign route{shortName}}stoptimes{scheduledDeparture serviceDay}}}distance}}}}"
 
             Log.d(API_TAG, data)
 

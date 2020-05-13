@@ -83,13 +83,27 @@
         app:layout_constraintGuide_percent="0.75"/>
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/leavesText"
+        android:id="@+id/stopTimeText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="-"
         style="@style/ItemTextStyle"
+        android:textSize="14sp"
         app:layout_constraintLeft_toRightOf="@id/guide3"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/nextstopTimeText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="-"
+        style="@style/ItemTextStyle"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintLeft_toRightOf="@id/guide3"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/stopTimeText"
         app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

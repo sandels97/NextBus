@@ -1,6 +1,7 @@
 package com.santtuhyvarinen.nextbus
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +10,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import java.util.*
 
 //RecyclerView adapter that manages bus stop item views
 class BusStopAdapter(private val context : Context, var busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
     class ViewHolder(var root : View) : RecyclerView.ViewHolder(root) {
         val routeTextView : TextView
-        val leavesTextView : TextView
+        val stopTimeTextView : TextView
+        val nextStopTimeTextView : TextView
         val destinationTextView : TextView
         val busStopNameTextView : TextView
         val busIcon : ImageView
@@ -25,7 +29,8 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
             busIcon = root.findViewById(R.id.transportIcon)
             busStopNameTextView = root.findViewById(R.id.stopText)
             routeTextView = root.findViewById(R.id.routeText)
-            leavesTextView = root.findViewById(R.id.leavesText)
+            stopTimeTextView = root.findViewById(R.id.stopTimeText)
+            nextStopTimeTextView = root.findViewById(R.id.nextstopTimeText)
             destinationTextView = root.findViewById(R.id.destinationText)
             distanceText = root.findViewById(R.id.stopDistanceText)
         }
@@ -51,25 +56,33 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         val distance = busStopModel.distance
         holder.distanceText.text = "$distance m"
 
+        //Fill the stop time and the next stop time textViews
         if(busStopModel.stopTimes.size > 0) {
-            holder.leavesTextView.text = getLeaveTime(busStopModel.stopTimes[0])
+            var nextStopTime = false
+            for(stopTime in busStopModel.stopTimes) {
+                //Skip the stop times that have already passed
+                if(stopTime.isAfterNow) {
+                    if(!nextStopTime) {
+                        holder.stopTimeTextView.text = getLeaveTime(stopTime)
+                        nextStopTime = true
+                    } else {
+                        holder.nextStopTimeTextView.text = getLeaveTime(stopTime)
+                        break
+                    }
+                }
+            }
         }
-
     }
 
-    fun getLeaveTime(seconds : Int) : String {
-        val now = DateTime.now()
-
-        val leaveMinutes = Math.floor((seconds % 3600)/60.0).toInt()
-        val leaveHours = Math.floor(seconds/3600.0).toInt()
-
-        //If departure is within 10 min of the current moment
-        if(seconds - now.secondOfDay < 10 * 60) {
-            val value = Math.floor((seconds - now.secondOfDay) / 60.0).toInt()
-            return "$value m"
+    //Get the stop time - if the stop time is within 10min, show only minutes to stop time
+    fun getLeaveTime(stopTime : DateTime) : String {
+        val tenMinutes = DateTime.now().plusMinutes(10)
+        if(stopTime.isAfter(tenMinutes)) {
+            val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+            return dateTimeFormatter.print(stopTime)
+        } else {
+            val minutes = stopTime.minuteOfDay - DateTime().minuteOfDay
+            return "$minutes m"
         }
-        val hourString = String.format("%02d", leaveHours)
-        val minuteString = String.format("%02d", leaveMinutes)
-        return "$hourString:$minuteString"
     }
 }

@@ -54,9 +54,6 @@ class HomeFragment : Fragment() {
             override fun dataReady(busModels: List<BusStopModel>) {
                 busStopAdapter.busStopModels = busModels
                 busStopAdapter.notifyDataSetChanged()
-                for(model in busModels) {
-                    Log.d(ApiHandler.API_TAG, model.toString())
-                }
             }
         })
 
