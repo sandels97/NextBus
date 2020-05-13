@@ -15,6 +15,9 @@
     <string name="update_displacement_title">Displacement (in meters)</string>
     <string name="update_displacement_summary">Displacement after which should refresh</string>
 
+    <string name="highlight_stoptime_title">Highlight background</string>
+    <string name="highlight_stoptime_summary">Highlight background if the stop is within 500 meters and the departure time is within 10 minutes</string>
+
     <string name="leaves">Leaves</string>
     <string name="next">Next</string>
     <string name="stop">Stop</string>

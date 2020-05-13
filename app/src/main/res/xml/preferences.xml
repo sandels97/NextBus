@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <SeekBarPreference
         android:key="search_amount_key"
         android:title="@string/search_amount_title"
@@ -14,11 +15,9 @@
         android:widgetLayout="@style/Widget.AppCompat.SeekBar"
         android:defaultValue="1000"
         android:max="5000"/>
-    <SeekBarPreference
-        android:key="update_displacement_key"
-        android:title="@string/update_displacement_title"
-        android:summary="@string/update_displacement_summary"
-        android:widgetLayout="@style/Widget.AppCompat.SeekBar"
-        android:defaultValue="50"
-        android:max="100"/>
+    <CheckBoxPreference
+        android:key="highlight_stoptime_key"
+        android:title="@string/highlight_stoptime_title"
+        app:summary="@string/highlight_stoptime_summary"
+        android:defaultValue="true"/>
 </PreferenceScreen>

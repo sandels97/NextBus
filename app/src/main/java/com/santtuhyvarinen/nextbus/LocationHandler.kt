@@ -38,14 +38,11 @@ class LocationHandler(private val context: Context, private val locationHandlerL
 
         val locationRequest = LocationRequest()
 
-        //Update every 10 seconds
+        //Update every 10 seconds if location has moved 10 meters or more
         locationRequest.interval = 10000
         locationRequest.fastestInterval = 10000
 
-        //Set the smallest displacement when should update the location
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val updateDisplacement = sharedPreferences.getInt("update_displacement_key", 50)
-        locationRequest.smallestDisplacement = updateDisplacement.toFloat()
+        locationRequest.smallestDisplacement = 10f
 
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
@@ -67,9 +64,14 @@ class LocationHandler(private val context: Context, private val locationHandlerL
 
         val result = fusedLocationProviderClient.lastLocation
         result.addOnSuccessListener {
-            Log.d(LOCATION_TAG, "Updated location with last known location")
-            location = PointF(it.latitude.toFloat(), it.longitude.toFloat())
-            locationHandlerListener.locationUpdated()
+            if(it != null) {
+                Log.d(LOCATION_TAG, "Updated location with last known location")
+                location = PointF(it.latitude.toFloat(), it.longitude.toFloat())
+                locationHandlerListener.locationUpdated()
+            } else {
+                Log.d(LOCATION_TAG, "Could not find last known location")
+                locationHandlerListener.locationOff()
+            }
         }.addOnFailureListener {
             Log.d(LOCATION_TAG, "Could not find last known location")
             locationHandlerListener.locationOff()
