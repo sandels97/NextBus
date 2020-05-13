@@ -2,6 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/layout"
+    android:foreground="?android:selectableItemBackgroundBorderless"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <View
@@ -10,6 +12,17 @@
         android:layout_height="0dp"
         android:background="@color/colorHighlightStopTime"
         android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/favoriteIcon"
+        android:layout_width="@dimen/favorite_icon_size"
+        android:layout_height="@dimen/favorite_icon_size"
+        android:src="@drawable/ic_favorite"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/transportIcon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

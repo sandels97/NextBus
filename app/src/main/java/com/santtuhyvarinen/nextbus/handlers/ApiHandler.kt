@@ -1,4 +1,4 @@
-package com.santtuhyvarinen.nextbus
+package com.santtuhyvarinen.nextbus.handlers
 
 import android.content.Context
 import android.util.Log
@@ -17,9 +17,6 @@ import java.io.*
 import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 
@@ -106,6 +103,8 @@ class ApiHandler(val context : Context, val apiHandlerListener: ApiHandlerListen
                 Log.d(API_TAG, result.toString())
 
                 val list = parseJSONResponse(result)
+
+
                 apiHandlerListener.dataReady(list)
             } else {
                 Log.d(API_TAG, "Result was null")

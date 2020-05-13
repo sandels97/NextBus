@@ -22,12 +22,14 @@ import java.util.*
 //RecyclerView adapter that manages bus stop item views
 class BusStopAdapter(private val context : Context, var busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
 
+    var busStopAdapterListener: BusStopAdapterListener? = null
+
     var hightlightStopTime = false
     init {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         hightlightStopTime = sharedPreferences.getBoolean("highlight_stoptime_key", true)
     }
-    class ViewHolder(var root : View) : RecyclerView.ViewHolder(root) {
+    class ViewHolder(val root : View) : RecyclerView.ViewHolder(root) {
         val routeTextView : TextView
         val stopTimeTextView : TextView
         val nextStopTimeTextView : TextView
@@ -36,6 +38,7 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         val busIcon : ImageView
         val distanceText : TextView
         val highlightBackground : View
+        val favoriteIcon : ImageView
 
         init {
             busIcon = root.findViewById(R.id.transportIcon)
@@ -46,6 +49,7 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
             destinationTextView = root.findViewById(R.id.destinationText)
             distanceText = root.findViewById(R.id.stopDistanceText)
             highlightBackground = root.findViewById(R.id.stopTimeHighlight)
+            favoriteIcon = root.findViewById(R.id.favoriteIcon)
         }
     }
 
@@ -77,6 +81,16 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         } else {
             holder.distanceText.setTextColor(Color.DKGRAY)
         }
+
+        holder.favoriteIcon.visibility = if(busStopModel.isFavorite)  View.VISIBLE else View.GONE
+
+        if(busStopAdapterListener != null)
+        holder.root.setOnLongClickListener(object : View.OnLongClickListener {
+            override fun onLongClick(p0: View?): Boolean {
+                busStopAdapterListener!!.longPressedRoute(busStopModel)
+                return true
+            }
+        })
 
         //Fill the stop time and the next stop time textViews
         if(busStopModel.stopTimes.size > 0) {
@@ -136,5 +150,9 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
             val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
             return dateTimeFormatter.print(stopTime)
         }
+    }
+
+    interface BusStopAdapterListener {
+        fun longPressedRoute(busStopModel: BusStopModel)
     }
 }

@@ -10,6 +10,8 @@ import org.joda.time.DateTime
 //Model that holds information about a bus stop
 class BusStopModel (var route : String, var stopName : String, var destinationName : String, var routeType : Int, var distance : Int, val stopTimes : List<DateTime>) {
 
+    var isFavorite = false
+
     companion object {
         //Based on https://developers.google.com/transit/gtfs/reference
         const val ROUTE_TYPE_TRAM = 0

@@ -2,6 +2,7 @@ package com.santtuhyvarinen.nextbus.fragments
 
 import android.content.*
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +12,18 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.santtuhyvarinen.nextbus.ApiHandler
+import com.santtuhyvarinen.nextbus.handlers.ApiHandler
 import com.santtuhyvarinen.nextbus.BusStopAdapter
-import com.santtuhyvarinen.nextbus.LocationHandler
+import com.santtuhyvarinen.nextbus.handlers.LocationHandler
 import com.santtuhyvarinen.nextbus.R
+import com.santtuhyvarinen.nextbus.database.FavoritesDatabase
+import com.santtuhyvarinen.nextbus.database.FavoritesDatabase.Companion.DATABASE_TAG
 import com.santtuhyvarinen.nextbus.models.BusStopModel
+import com.santtuhyvarinen.nextbus.models.FavoriteModel
+import kotlinx.coroutines.*
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 
 //Fragment for showing the list of close by bus stops
@@ -27,22 +35,23 @@ class HomeFragment : Fragment() {
     lateinit var tickReceiver: BroadcastReceiver
     lateinit var tickFilter : IntentFilter
 
+    lateinit var busStopAdapter: BusStopAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-
-        val busStopModels = ArrayList<BusStopModel>()
-
-        //Test data
-        /*for(x in 0 until 4) {
-            busStopModels.add(BusStopModel("543", "Fakekatu","Helsinki", BusStopModel.ROUTE_TYPE_BUS,1))
-            busStopModels.add(BusStopModel( "434", "Kuninkaantie","Vantaa", BusStopModel.ROUTE_TYPE_BUS,1))
-            busStopModels.add(BusStopModel( "431", "Vesikuja","Kivistö", BusStopModel.ROUTE_TYPE_RAIL,1))
-        }*/
 
         //Initialize the RecyclerView
         val linearLayoutManager = LinearLayoutManager(context)
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
-        val busStopAdapter = BusStopAdapter(context!!, busStopModels)
+        busStopAdapter = BusStopAdapter(context!!, ArrayList())
+
+        //Insert favorite or delete favorite from database when stop long clicked
+        busStopAdapter.busStopAdapterListener = object : BusStopAdapter.BusStopAdapterListener {
+            override fun longPressedRoute(busStopModel: BusStopModel) {
+                updateFavorite(busStopModel)
+            }
+        }
+
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = busStopAdapter
         recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -52,39 +61,45 @@ class HomeFragment : Fragment() {
 
         val progress = root.findViewById<ProgressBar>(R.id.progress)
 
-        val apiHandler = ApiHandler(context!!, object : ApiHandler.ApiHandlerListener {
-            override fun dataReady(busModels: List<BusStopModel>) {
-                busStopAdapter.busStopModels = busModels
-                busStopAdapter.notifyDataSetChanged()
-            }
-        }, progress)
-
-
-        locationHandler = LocationHandler(context!!, object : LocationHandler.LocationHandlerListener {
-
-            //Show the recyclerView
-            override fun locationUpdated() {
-                recyclerView.visibility = View.VISIBLE
-                locationOffIcon.visibility = View.GONE
-                locationOffText.visibility = View.GONE
-                val location = locationHandler.location
-
-                //Get the query radius from preferences
-                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-                val radius = sharedPreferences.getInt("search_radius_key", 1000)
-                if(location != null) {
-                    //Start fetching data from HSL api
-                    apiHandler.fetch(location.x, location.y, radius)
+        val apiHandler = ApiHandler(
+            context!!,
+            object :
+                ApiHandler.ApiHandlerListener {
+                override fun dataReady(busModels: List<BusStopModel>) {
+                    updateBusModels(busModels)
                 }
-            }
+            },
+            progress
+        )
 
-            //Hide recyclerview and instead show Location Off
-            override fun locationOff() {
-                recyclerView.visibility = View.INVISIBLE
-                locationOffIcon.visibility = View.VISIBLE
-                locationOffText.visibility = View.VISIBLE
-            }
-        })
+        locationHandler = LocationHandler(
+            context!!,
+            object :
+                LocationHandler.LocationHandlerListener {
+
+                //Show the recyclerView and fetch stop times
+                override fun locationUpdated() {
+                    recyclerView.visibility = View.VISIBLE
+                    locationOffIcon.visibility = View.GONE
+                    locationOffText.visibility = View.GONE
+                    val location = locationHandler.location
+
+                    //Get the query radius from preferences
+                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val radius = sharedPreferences.getInt("search_radius_key", 1000)
+                    if (location != null) {
+                        //Start fetching data from HSL api
+                        apiHandler.fetch(location.x, location.y, radius)
+                    }
+                }
+
+                //Hide recyclerview and instead show Location Off
+                override fun locationOff() {
+                    recyclerView.visibility = View.INVISIBLE
+                    locationOffIcon.visibility = View.VISIBLE
+                    locationOffText.visibility = View.VISIBLE
+                }
+            })
 
         tickReceiver = object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
@@ -97,6 +112,84 @@ class HomeFragment : Fragment() {
         context!!.registerReceiver(tickReceiver, tickFilter)
 
         return root
+    }
+
+    //Populate
+    fun updateBusModels(busStopModels : List<BusStopModel>) = CoroutineScope(Dispatchers.Main).launch {
+
+        val task = async (Dispatchers.IO) {
+            matchBusStopModelsWithFavorites(busStopModels)
+        }
+        task.await()
+        busStopAdapter.busStopModels = busStopModels
+        busStopAdapter.notifyDataSetChanged()
+    }
+
+    fun updateFavorite(busStopModel: BusStopModel) = CoroutineScope(Dispatchers.Main).launch {
+        val database = FavoritesDatabase.getInstance(context!!)
+        if(database != null) {
+            val task = async(Dispatchers.IO) {
+                val favorites = database.favoritesDao().getAll()
+                if (busStopModel.isFavorite) {
+                    //Find the matching favorite model
+                    var favoriteModel: FavoriteModel? = null
+                    for (favorite in favorites) {
+                        if (favorite.route.equals(busStopModel.route)) {
+                            favoriteModel = favorite
+                            break
+                        }
+                    }
+                    if (favoriteModel != null) {
+                        database.favoritesDao().delete(favoriteModel)
+                        Log.d(DATABASE_TAG, "Deleted favorite: " + busStopModel.route)
+                    }
+
+                } else {
+                    val favoriteModel = FavoriteModel(busStopModel.route)
+                    database.favoritesDao().insert(favoriteModel)
+                    Log.d(DATABASE_TAG, "Inserted new favorite: " + busStopModel.route)
+                }
+
+                matchBusStopModelsWithFavorites(busStopAdapter.busStopModels)
+            }
+
+            task.await()
+            busStopAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun matchBusStopModelsWithFavorites(busModels: List<BusStopModel>) {
+        val database = FavoritesDatabase.getInstance(context!!)
+        if(database != null) {
+            val favorites = database.favoritesDao().getAll()
+            //Match the favorite with
+            for (busModel in busModels) {
+                busModel.isFavorite = false
+                for (favorite in favorites) {
+                    if (busModel.route.equals(favorite.route)) {
+                        busModel.isFavorite = true
+                        break
+                    }
+                }
+            }
+
+            //Bring favorite routes to front, then sort by distance, closest stop to top
+            Collections.sort(busModels, object : Comparator<BusStopModel> {
+                override fun compare(stop1: BusStopModel, stop2: BusStopModel): Int {
+                    if (stop1.isFavorite && !stop2.isFavorite) {
+                        return -1
+                    } else if (!stop1.isFavorite && stop2.isFavorite) {
+                        return 1
+                    }
+
+                    val value = Math.abs(stop2.distance - stop1.distance)
+
+                    //There is possibility for IllegalArgumentException: (Comparison method violates its general contract!) if we return 0
+                    if(value == 0) return -1
+                    return value
+                }
+            });
+        }
     }
 
     override fun onPause() {
