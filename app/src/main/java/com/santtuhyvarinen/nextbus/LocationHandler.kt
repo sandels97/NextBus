@@ -13,6 +13,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.*
 
 class LocationHandler(private val context: Context, private val locationHandlerListener: LocationHandlerListener) {
@@ -41,8 +42,10 @@ class LocationHandler(private val context: Context, private val locationHandlerL
         locationRequest.interval = 10000
         locationRequest.fastestInterval = 10000
 
-        //But only if travelled over 50m
-        locationRequest.smallestDisplacement = 50f
+        //Set the smallest displacement when should update the location
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val updateDisplacement = sharedPreferences.getInt("update_displacement_key", 50)
+        locationRequest.smallestDisplacement = updateDisplacement.toFloat()
 
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 

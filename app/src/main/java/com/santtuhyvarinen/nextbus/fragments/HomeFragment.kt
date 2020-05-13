@@ -1,31 +1,31 @@
 package com.santtuhyvarinen.nextbus.fragments
 
-import android.location.Location
-import android.location.LocationListener
+import android.content.*
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.LocationAvailability
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.santtuhyvarinen.nextbus.ApiHandler
 import com.santtuhyvarinen.nextbus.BusStopAdapter
 import com.santtuhyvarinen.nextbus.LocationHandler
-import com.santtuhyvarinen.nextbus.LocationHandler.Companion.LOCATION_TAG
 import com.santtuhyvarinen.nextbus.R
 import com.santtuhyvarinen.nextbus.models.BusStopModel
+
 
 //Fragment for showing the list of close by bus stops
 class HomeFragment : Fragment() {
 
     lateinit var locationHandler : LocationHandler
+
+    //Used to update the stop times every minute
+    lateinit var tickReceiver: BroadcastReceiver
+    lateinit var tickFilter : IntentFilter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
@@ -50,12 +50,15 @@ class HomeFragment : Fragment() {
         val locationOffIcon = root.findViewById<View>(R.id.locationOffIcon)
         val locationOffText = root.findViewById<View>(R.id.locationOffText)
 
-        val apiHandler = ApiHandler(object : ApiHandler.ApiHandlerListener {
+        val progress = root.findViewById<ProgressBar>(R.id.progress)
+
+        val apiHandler = ApiHandler(context!!, object : ApiHandler.ApiHandlerListener {
             override fun dataReady(busModels: List<BusStopModel>) {
                 busStopAdapter.busStopModels = busModels
                 busStopAdapter.notifyDataSetChanged()
             }
-        })
+        }, progress)
+
 
         locationHandler = LocationHandler(context!!, object : LocationHandler.LocationHandlerListener {
 
@@ -65,7 +68,14 @@ class HomeFragment : Fragment() {
                 locationOffIcon.visibility = View.GONE
                 locationOffText.visibility = View.GONE
                 val location = locationHandler.location
-                if(location != null) apiHandler.fetch(location.x, location.y, 10000)
+
+                //Get the query radius from preferences
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val radius = sharedPreferences.getInt("search_radius_key", 1000)
+                if(location != null) {
+                    //Start fetching data from HSL api
+                    apiHandler.fetch(location.x, location.y, radius)
+                }
             }
 
             //Hide recyclerview and instead show Location Off
@@ -76,10 +86,30 @@ class HomeFragment : Fragment() {
             }
         })
 
+        tickReceiver = object : BroadcastReceiver() {
+            override fun onReceive(p0: Context?, p1: Intent?) {
+                busStopAdapter.notifyDataSetChanged()
+            }
+        }
 
+        tickFilter = IntentFilter()
+        tickFilter.addAction("android.intent.action.TIME_TICK")
+        context!!.registerReceiver(tickReceiver, tickFilter)
 
         return root
     }
 
+    override fun onPause() {
+        super.onPause()
+        context!!.unregisterReceiver(tickReceiver)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        context!!.registerReceiver(tickReceiver, tickFilter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 }

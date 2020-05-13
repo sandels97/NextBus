@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SeekBarPreference
+        android:key="search_amount_key"
+        android:title="@string/search_amount_title"
+        android:summary="@string/search_amount_summary"
+        android:widgetLayout="@style/Widget.AppCompat.SeekBar"
+        android:defaultValue="10"
+        android:max="30"/>
+    <SeekBarPreference
+        android:key="search_radius_key"
+        android:title="@string/search_radius_title"
+        android:summary="@string/search_radius_summary"
+        android:widgetLayout="@style/Widget.AppCompat.SeekBar"
+        android:defaultValue="1000"
+        android:max="5000"/>
+    <SeekBarPreference
+        android:key="update_displacement_key"
+        android:title="@string/update_displacement_title"
+        android:summary="@string/update_displacement_summary"
+        android:widgetLayout="@style/Widget.AppCompat.SeekBar"
+        android:defaultValue="50"
+        android:max="100"/>
+</PreferenceScreen>

@@ -2,6 +2,7 @@ package com.santtuhyvarinen.nextbus.models
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.santtuhyvarinen.nextbus.R
 import org.joda.time.DateTime
@@ -21,9 +22,12 @@ class BusStopModel (var route : String, var stopName : String, var destinationNa
         when(routeType) {
             ROUTE_TYPE_TRAM -> return ContextCompat.getDrawable(context, R.drawable.ic_tram)!!
             ROUTE_TYPE_SUBWAY -> return ContextCompat.getDrawable(context, R.drawable.ic_subway)!!
-            ROUTE_TYPE_RAIL -> return ContextCompat.getDrawable(context, R.drawable.ic_train)!!
+            ROUTE_TYPE_RAIL, 109 -> return ContextCompat.getDrawable(context, R.drawable.ic_train)!!
             ROUTE_TYPE_BUS -> return ContextCompat.getDrawable(context, R.drawable.ic_bus)!!
-            else -> return ContextCompat.getDrawable(context, R.drawable.ic_transport_other)!!
+            else -> {
+                Log.d("route", "Unknown transport type: " + routeType.toString())
+                return ContextCompat.getDrawable(context, R.drawable.ic_transport_other)!!
+            }
         }
     }
 

@@ -1,6 +1,8 @@
 package com.santtuhyvarinen.nextbus
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,6 +58,15 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         val distance = busStopModel.distance
         holder.distanceText.text = "$distance m"
 
+        //Highlight distance text if near enough
+        val near = distance < 250
+        holder.distanceText.typeface = if(near) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        if(near) {
+            holder.distanceText.setTextColor(Color.RED)
+        } else {
+            holder.distanceText.setTextColor(Color.DKGRAY)
+        }
+
         //Fill the stop time and the next stop time textViews
         if(busStopModel.stopTimes.size > 0) {
             var nextStopTime = false
@@ -63,6 +74,15 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
                 //Skip the stop times that have already passed
                 if(stopTime.isAfterNow) {
                     if(!nextStopTime) {
+                        val withinTenMinutes = isWithinTenMinutes(stopTime)
+                        holder.stopTimeTextView.typeface = if(withinTenMinutes) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+
+                        if(withinTenMinutes) {
+                            holder.stopTimeTextView.setTextColor(Color.RED)
+                        } else {
+                            holder.stopTimeTextView.setTextColor(Color.BLACK)
+                        }
+
                         holder.stopTimeTextView.text = getLeaveTime(stopTime)
                         nextStopTime = true
                     } else {
@@ -74,15 +94,18 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         }
     }
 
-    //Get the stop time - if the stop time is within 10min, show only minutes to stop time
-    fun getLeaveTime(stopTime : DateTime) : String {
+    private fun isWithinTenMinutes(stopTime : DateTime) : Boolean {
         val tenMinutes = DateTime.now().plusMinutes(10)
-        if(stopTime.isAfter(tenMinutes)) {
-            val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
-            return dateTimeFormatter.print(stopTime)
-        } else {
+        return !(stopTime.isAfter(tenMinutes))
+    }
+    //Get the stop time - if the stop time is within 10min, show only minutes to stop time
+    private fun getLeaveTime(stopTime : DateTime) : String {
+        if(isWithinTenMinutes(stopTime)) {
             val minutes = stopTime.minuteOfDay - DateTime().minuteOfDay
             return "$minutes m"
+        } else {
+            val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("HH:mm")
+            return dateTimeFormatter.print(stopTime)
         }
     }
 }

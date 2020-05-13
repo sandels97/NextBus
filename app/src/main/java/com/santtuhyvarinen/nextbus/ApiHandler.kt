@@ -1,6 +1,10 @@
 package com.santtuhyvarinen.nextbus
 
+import android.content.Context
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
+import androidx.preference.PreferenceManager
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -19,7 +23,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
+class ApiHandler(val context : Context, val apiHandlerListener: ApiHandlerListener, val progress : ProgressBar)  {
 
     interface ApiHandlerListener {
         fun dataReady(busModels : List<BusStopModel>)
@@ -27,13 +31,6 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
     companion object {
         const val API_URL = "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql"
         const val API_TAG = "api_tag"
-
-        fun secondsToTime(seconds : Int) {
-            val minutes = Math.floor((seconds % 3600)/60.0)
-            val hours = Math.floor(seconds/3600.0)
-
-            Log.d(API_TAG, "$hours : $minutes")
-        }
 
         //Create BusStopModels from the fetched JSONObject - JSON object has to match GraphQL query in fetchStopTimeData
         fun parseJSONResponse(jsonObject: JSONObject) : List<BusStopModel> {
@@ -96,9 +93,15 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
     }
 
     fun fetch(latitude : Float, longitude : Float, radius : Int){
+
+        progress.visibility = View.VISIBLE
         GlobalScope.launch(Dispatchers.Main) {
-            val date = Date()
-            val result = fetchStopTimeData(date, latitude, longitude, radius)
+
+            //How many stops will be shown from the result
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val searchAmount = sharedPreferences.getInt("search_amount_key", 10)
+
+            val result = fetchStopTimeData(latitude, longitude, radius, searchAmount)
             if (result != null) {
                 Log.d(API_TAG, result.toString())
 
@@ -107,10 +110,12 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
             } else {
                 Log.d(API_TAG, "Result was null")
             }
+            progress.visibility = View.GONE
         }
     }
 
-    private suspend fun fetchStopTimeData(date : Date, latitude : Float, longitude : Float, radius : Int) : JSONObject? = withContext(Dispatchers.IO) {
+    private suspend fun fetchStopTimeData(latitude : Float, longitude : Float, radius : Int, searchAmount : Int) : JSONObject? = withContext(Dispatchers.IO) {
+
         val inputStream : InputStream
 
         var result : JSONObject? = null
@@ -130,7 +135,7 @@ class ApiHandler(val apiHandlerListener: ApiHandlerListener)  {
 
             //GraphQL query
             //val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name stoptimesForServiceDate(date : \"$dateValue\"){stoptimes{trip{routeShortName tripHeadsign}}}vehicleType}distance}}}}"
-            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: 20) {edges{node{stop{id name vehicleType stoptimesForPatterns{pattern{ headsign route{shortName}}stoptimes{scheduledDeparture serviceDay}}}distance}}}}"
+            val data = "{ stopsByRadius(lat: $latitude, lon: $longitude, radius: $radius, first: $searchAmount) {edges{node{stop{id name vehicleType stoptimesForPatterns{pattern{ headsign route{shortName}}stoptimes{scheduledDeparture serviceDay}}}distance}}}}"
 
             Log.d(API_TAG, data)
 
