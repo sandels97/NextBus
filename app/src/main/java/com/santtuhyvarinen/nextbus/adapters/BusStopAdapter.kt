@@ -1,9 +1,8 @@
-package com.santtuhyvarinen.nextbus
+package com.santtuhyvarinen.nextbus.adapters
 
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
+import com.santtuhyvarinen.nextbus.R
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
-import java.util.*
 
 //RecyclerView adapter that manages bus stop item views
 class BusStopAdapter(private val context : Context, var busStopModels : List<BusStopModel>) : RecyclerView.Adapter<BusStopAdapter.ViewHolder>(){
@@ -55,7 +54,9 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.item_busstop, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(
+            view
+        )
     }
 
     override fun getItemCount(): Int {

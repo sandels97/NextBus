@@ -7,13 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.santtuhyvarinen.nextbus.handlers.ApiHandler
-import com.santtuhyvarinen.nextbus.BusStopAdapter
+import com.santtuhyvarinen.nextbus.adapters.BusStopAdapter
 import com.santtuhyvarinen.nextbus.handlers.LocationHandler
 import com.santtuhyvarinen.nextbus.R
 import com.santtuhyvarinen.nextbus.database.FavoritesDatabase
@@ -43,7 +44,10 @@ class HomeFragment : Fragment() {
         //Initialize the RecyclerView
         val linearLayoutManager = LinearLayoutManager(context)
         val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
-        busStopAdapter = BusStopAdapter(context!!, ArrayList())
+        busStopAdapter = BusStopAdapter(
+            context!!,
+            ArrayList()
+        )
 
         //Insert favorite or delete favorite from database when stop long clicked
         busStopAdapter.busStopAdapterListener = object : BusStopAdapter.BusStopAdapterListener {
@@ -127,7 +131,10 @@ class HomeFragment : Fragment() {
 
     fun updateFavorite(busStopModel: BusStopModel) = CoroutineScope(Dispatchers.Main).launch {
         val database = FavoritesDatabase.getInstance(context!!)
+
         if(database != null) {
+
+            var toastString = ""
             val task = async(Dispatchers.IO) {
                 val favorites = database.favoritesDao().getAll()
                 if (busStopModel.isFavorite) {
@@ -141,28 +148,35 @@ class HomeFragment : Fragment() {
                     }
                     if (favoriteModel != null) {
                         database.favoritesDao().delete(favoriteModel)
-                        Log.d(DATABASE_TAG, "Deleted favorite: " + busStopModel.route)
+                        toastString = getString(R.string.remove_from_favorites, favoriteModel.route)
                     }
 
                 } else {
                     val favoriteModel = FavoriteModel(busStopModel.route)
                     database.favoritesDao().insert(favoriteModel)
-                    Log.d(DATABASE_TAG, "Inserted new favorite: " + busStopModel.route)
+                    toastString = getString(R.string.added_to_favorites, favoriteModel.route)
                 }
 
                 matchBusStopModelsWithFavorites(busStopAdapter.busStopModels)
             }
 
             task.await()
+
+            //Show feedback to user (added or removed favorite route)
+            if(!toastString.isEmpty()) {
+                Toast.makeText(context, toastString, Toast.LENGTH_LONG).show()
+            }
             busStopAdapter.notifyDataSetChanged()
         }
     }
 
     private fun matchBusStopModelsWithFavorites(busModels: List<BusStopModel>) {
-        val database = FavoritesDatabase.getInstance(context!!)
+        val context = context
+        if(context == null) return
+        val database = FavoritesDatabase.getInstance(context)
         if(database != null) {
             val favorites = database.favoritesDao().getAll()
-            //Match the favorite with
+            //Check if BusModel has a route that is favorite
             for (busModel in busModels) {
                 busModel.isFavorite = false
                 for (favorite in favorites) {

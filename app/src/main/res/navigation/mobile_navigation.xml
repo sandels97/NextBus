@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.santtuhyvarinen.nextbus.fragments.MapFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_map" />
+        android:id="@+id/navigation_favorites"
+        android:name="com.santtuhyvarinen.nextbus.fragments.FavoritesFragment"
+        android:label="@string/title_favorites"
+        tools:layout="@layout/fragment_favorites" />
 
     <fragment
         android:id="@+id/navigation_settings"
