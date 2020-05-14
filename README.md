@@ -20,7 +20,7 @@ Sovelluksen käyttöliittymä on jaettu kolmeen välilehteen. Koti, suosikit ja 
 <img src="images/nextbus_screenshot2.png" alt="Koti" width="300"/><br>
 Koti on sovelluksen ensimmäinen välilehti, jossa näkyy lista käyttäjän lähellä olevista pysäkeistä ja niiden läpi kulkevien reittien aikatauluista.
 
-Sovellus käyttää [HSL Reititys APIa](https://digitransit.fi/en/developers/apis/1-routing-api/) listassa näytettävän datan hakemiseen. Haku on aina rajattu käyttäjän sijaintiin ja hakualueeseen, jonka kokoa voi säätää sovelluksen asetuksista. Sovellus tekee haun GraphQL muodossa.
+Sovellus käyttää [HSL Reititys APIa](https://digitransit.fi/en/developers/apis/1-routing-api/) listassa näytettävän datan hakemiseen. Haku on aina rajattu käyttäjän sijaintiin ja hakualueeseen, jonka kokoa voi säätää sovelluksen asetuksista. Sovellus tekee rajapinta kutsun GraphQL muodossa.
 
 Rivien, joiden pysäkki on lähellä ja seuraava lähtöaika on alle kymmenen minuutin sisällä, tausta vaihtaa väriä ja vilkkuu.
 
@@ -30,7 +30,7 @@ Sovelluksessa on mahdollista tallentaa suosikki reittejä, jotka näytetään en
 Suosikkivälilehdessä voi lisätä ja poistaa reittejä suosikeista.
 
 Suosikit tallennetaan sisäiseen tietokantaan Androidin oman Room Persistence kirjaston avulla. Suosikeista ei tallenneta muuta tietoa kuin reitti, joka toimii samalla pääavaimena.
-Käyttäjä voi myös lisätä ja poistaa suosikkeja kotinäytöstä, painamalla pohjassa reittiä kotinäytön listassa.
+Käyttäjä voi myös lisätä ja poistaa suosikkeja myös kotinäytössä, painamalla pohjassa reittiä kotinäytön listassa.
 
 ### Asetukset
 <img src="images/nextbus_screenshot4.png" alt="Asetukset" width="300"/><br>
@@ -41,7 +41,14 @@ Asetukset välilehdessä käyttäjä voi muuttaa esim. hakualueen laajuutta.
 Sovellus on käännetty sekä englanniksi ja suomeksi. Sovelluksen teksti vaihtuu laitteen kielen perusteella. Oletuksena on kuitenkin englanti, jos laitteen kieli ei ole suomi tai englanti.
 
 ### Reflektointi
-Opin tekemään API kutsuja GraphQL muodossa, jota en ollut aikaisemmin käyttänyt.
+Opin tekemään API kutsuja GraphQL muodossa, jota en ollut koskaan aikaisemmin käyttänyt.
+
 Kehityin paljon Kotlin ohjelmoinnissa. Olin käyttänyt sitä vähän ennen, mutta sillä koodaaminen oli kuitenkin hitaampaa kuin Javalla.
+Nyt koodaaminen sujuu Kotlinilla melkein samaa tahtia kuin Javan kanssa.
+
 Opin käyttämään Kotlin Coroutineita asynkronisten tehtävien suorittamiseen esim. tietokanta ja rajapinta kutsut.
+
+Jatkossa haluaisin perehtyä vielä syvällisemmin Kotliniin ja oppimaan käyttämään sen ei-itsestäänselviä ominaisuuksia ja tapoja tehdä asioita. 
+
+
 
