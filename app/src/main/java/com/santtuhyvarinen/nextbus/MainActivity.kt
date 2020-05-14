@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -27,13 +28,15 @@ class MainActivity : AppCompatActivity() {
 
     var permissionsGranted = false
 
+    lateinit var navController : NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         //Navigation
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(setOf(
                 R.id.navigation_home, R.id.navigation_favorites, R.id.navigation_settings))
 
@@ -56,5 +59,8 @@ class MainActivity : AppCompatActivity() {
 
         permissionsGranted = PermissionUtil.hasPermissions(this, *PERMISSIONS)
         Log.d(PermissionUtil.PERMISSION_TAG, "Permissions granted? " + permissionsGranted)
+
+        //If permission has been granted, reload home page
+        if(permissionsGranted) navController.navigate(R.id.navigation_home)
     }
 }

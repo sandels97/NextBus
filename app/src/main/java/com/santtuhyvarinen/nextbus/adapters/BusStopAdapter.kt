@@ -23,10 +23,14 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
 
     var busStopAdapterListener: BusStopAdapterListener? = null
 
-    var hightlightStopTime = false
+    private var highlightStopTime = false
+
+    private val distanceConsideredNear : Int
+
     init {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        hightlightStopTime = sharedPreferences.getBoolean("highlight_stoptime_key", true)
+        highlightStopTime = sharedPreferences.getBoolean("highlight_stoptime_key", true)
+        distanceConsideredNear = sharedPreferences.getInt("stop_near_key", 500)
     }
     class ViewHolder(val root : View) : RecyclerView.ViewHolder(root) {
         val routeTextView : TextView
@@ -75,7 +79,7 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
         holder.distanceText.text = "$distance m"
 
         //Highlight distance text if near enough
-        val near = distance < 500
+        val near = distance < distanceConsideredNear
         holder.distanceText.typeface = if(near) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         if(near) {
             holder.distanceText.setTextColor(Color.RED)
@@ -123,7 +127,7 @@ class BusStopAdapter(private val context : Context, var busStopModels : List<Bus
             }
             val background = holder.highlightBackground
             //Highlight background, if the stop is nearby and the next stop time is within 10 minutes
-            if (highlightBackground && hightlightStopTime) {
+            if (highlightBackground && highlightStopTime) {
                 background.visibility = View.VISIBLE
                 val alphaAnimation = AlphaAnimation(0.2f, 0.8f)
                 alphaAnimation.duration = 1000

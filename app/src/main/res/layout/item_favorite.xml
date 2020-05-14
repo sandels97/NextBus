@@ -8,8 +8,8 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/favoriteIcon"
-        android:layout_width="@dimen/favorite_icon_size"
-        android:layout_height="@dimen/favorite_icon_size"
+        android:layout_width="@dimen/bus_stop_icon_size"
+        android:layout_height="@dimen/bus_stop_icon_size"
         android:src="@drawable/ic_favorite"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/guide1"

@@ -95,8 +95,9 @@ class ApiHandler(val context : Context, val apiHandlerListener: ApiHandlerListen
         GlobalScope.launch(Dispatchers.Main) {
 
             //How many stops will be shown from the result
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-            val searchAmount = sharedPreferences.getInt("search_amount_key", 10)
+            //val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            //val searchAmount = sharedPreferences.getInt("search_amount_key", 10)
+            val searchAmount = 20
 
             val result = fetchStopTimeData(latitude, longitude, radius, searchAmount)
             if (result != null) {

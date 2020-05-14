@@ -17,8 +17,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val radiusPreference = findPreference("search_radius_key") as SeekBarPreference
         radiusPreference.min = 100
-
-        val stopsPreference = findPreference("search_amount_key") as SeekBarPreference
-        stopsPreference.min = 1
     }
 }
