@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">MissäDösä</string>
+    <string name="title_home">Koti</string>
+    <string name="title_favorites">Suosikit</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="settings">Asetukset</string>
+
+    <string name="search_radius_title">Hakualue</string>
+    <string name="search_radius_summary">Pysäkkien hakualue metreinä</string>
+
+    <string name="stop_near_title">Pysäkki on lähellä</string>
+    <string name="stop_near_summary">Suurin matka metreinä milloin pysäkki katsotaan olevan lähistöllä</string>
+
+    <!--Not used for now-->
+    <string name="search_amount_title">Stops</string>
+    <string name="search_amount_summary">How many stops will be shown from the result</string>
+    <string name="update_displacement_title">Displacement (in meters)</string>
+    <string name="update_displacement_summary">Displacement after which should refresh</string>
+
+
+    <string name="highlight_stoptime_title">Korosta tausta</string>
+    <string name="highlight_stoptime_summary">Korosta taustaa, kun pysäkki on lähistöllä ja lähtöaika on 10 minuutin sisällä</string>
+
+    <string name="leaves">Lähtee</string>
+    <string name="next">Seuraava</string>
+    <string name="stop">Pysäkki</string>
+    <string name="destination">Määränpää</string>
+    <string name="route">Reitti</string>
+
+    <string name="add_route">Lisää reitti (esim. 550)</string>
+
+    <string name="location_not_found">Sijaintia ei löytynyt</string>
+
+    <string name="added_to_favorites">%1$s lisätty suosikkeihin</string>
+    <string name="remove_from_favorites">%1$s poistettu suosikeista</string>
+    <string name="favorites_explanation">Suosikkireitit näytetään ensimmäisenä kotinäytössä, jos ne ovat hakualueen sisällä</string>
+</resources>
