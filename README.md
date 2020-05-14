@@ -1,4 +1,4 @@
-# NextBus or NextDösä 
+# NextBus or MissäDösä 
 
 This project is the end-project for the "Ohjelmistokehityksen teknogioita" course.
 
@@ -17,24 +17,24 @@ Sovellus on rakennettu pääasiassa Android Studiolla ja koodattu Kotlinilla.
 Sovelluksen käyttöliittymä on jaettu kolmeen välilehteen. Koti, suosikit ja asetukset.
 
 ### Kotinäyttö
-![alt text](images/nextbus_screenshot2.png "Home screen" =250x)
-Kotinäyttö on sovelluksen ensimmäinen välilehti, jossa näkyy lista käyttäjän lähellä olevista pysäkeistä ja niiden läpi kulkevien reittien aikatauluista.
+<img src="images/nextbus_screenshot2.png" alt="Koti" width="300"/><br>
+Koti on sovelluksen ensimmäinen välilehti, jossa näkyy lista käyttäjän lähellä olevista pysäkeistä ja niiden läpi kulkevien reittien aikatauluista.
 
 Sovellus käyttää [HSL Reititys APIa](https://digitransit.fi/en/developers/apis/1-routing-api/) listassa näytettävän datan hakemiseen. Haku on aina rajattu käyttäjän sijaintiin ja hakualueeseen, jonka kokoa voi säätää sovelluksen asetuksista. Sovellus tekee haun GraphQL muodossa.
-
-Reittilista käyttää Androidin omaa RecyclerView komponenttia. BusStopAdapter.
 
 Rivien, joiden pysäkki on lähellä ja seuraava lähtöaika on alle kymmenen minuutin sisällä, tausta vaihtaa väriä ja vilkkuu.
 
 ### Suosikit
-![alt text](images/nextbus_screenshot3.png "Favorites screen" =250x)
+<img src="images/nextbus_screenshot3.png" alt="Suosikit" width="300"/><br>
 Sovelluksessa on mahdollista tallentaa suosikki reittejä, jotka näytetään ensimmäisenä kotinäytön listassa, jos ne löytyvät tehdyn haun hakualueella.
 Suosikkivälilehdessä voi lisätä ja poistaa reittejä suosikeista.
 
 Suosikit tallennetaan sisäiseen tietokantaan Androidin oman Room Persistence kirjaston avulla. Suosikeista ei tallenneta muuta tietoa kuin reitti, joka toimii samalla pääavaimena.
 Käyttäjä voi myös lisätä ja poistaa suosikkeja kotinäytöstä, painamalla pohjassa reittiä kotinäytön listassa.
 
-![alt text](images/nextbus_screenshot4.png "Settings screen" =250x)
+### Asetukset
+<img src="images/nextbus_screenshot4.png" alt="Asetukset" width="300"/><br>
+
 Asetukset välilehdessä käyttäjä voi muuttaa esim. hakualueen laajuutta. 
 
 ### Muuta
