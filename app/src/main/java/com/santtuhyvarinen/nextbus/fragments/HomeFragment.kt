@@ -89,11 +89,15 @@ class HomeFragment : Fragment() {
                     val location = locationHandler.location
 
                     //Get the query radius from preferences
-                    val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-                    val radius = sharedPreferences.getInt("search_radius_key", 1000)
-                    if (location != null) {
-                        //Start fetching data from HSL api
-                        apiHandler.fetch(location.x, location.y, radius)
+                    val context = context
+                    if(context != null) {
+                        val sharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(context)
+                        val radius = sharedPreferences.getInt("search_radius_key", 1000)
+                        if (location != null) {
+                            //Start fetching data from HSL api
+                            apiHandler.fetch(location.x, location.y, radius)
+                        }
                     }
                 }
 
