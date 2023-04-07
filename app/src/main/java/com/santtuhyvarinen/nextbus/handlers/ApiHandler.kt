@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import androidx.preference.PreferenceManager
+import com.santtuhyvarinen.nextbus.BuildConfig
 import com.santtuhyvarinen.nextbus.models.BusStopModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -126,6 +127,7 @@ class ApiHandler(val context : Context, val apiHandlerListener: ApiHandlerListen
             val conn = url.openConnection() as HttpURLConnection
             conn.requestMethod = "POST"
             conn.setRequestProperty("Content-Type", "application/graphql");
+            conn.setRequestProperty("digitransit-subscription-key", BuildConfig.DIGI_TRANSIT_SUBSCRIPTION_KEY)
             conn.connectTimeout = 8000;
             conn.readTimeout = 8000;
             conn.doOutput = true

@@ -9,6 +9,18 @@ Users' bus stop preferences are going to stored to local database with Android R
 
 For now, the scale of the project is only to allow users to search for bus routes or bus stops, and to show nearest or selected bus stop's timetable information. I'm not planning to support searching for the fastest route to destination at least yet.
 
+## Update (07.04.2023)
+
+The digitransit API requires an API key to function now. You can generate your own API key by registering an account in [Digitransit portal](https://portal-api.digitransit.fi/).
+
+For setting up the project, you need to add a **secrets.properties** file in the project root with your subscription key.
+
+The **secrets.properties** file should contain **DIGI_TRANSIT_SUBSCRIPTION_KEY** property like this:
+
+```
+DIGI_TRANSIT_SUBSCRIPTION_KEY={YOUR_SUBSCRIPTION_KEY_HERE}
+```
+
 ## Projektin palautus
 Lopputuloksena on sovellus, jonka avulla voi helposti katsoa milloin seuraava bussi tai juna lähtee käyttäjän lähistöltä.
 
